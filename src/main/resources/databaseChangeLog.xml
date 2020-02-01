@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet id="1" author="j0schi">
+        <createTable tableName="users_role">
+            <column name="id_role" type="BIGINT">
+                <constraints nullable="false" unique="true" primaryKey="true"/>
+            </column>
+            <column name="role_name" type="VARCHAR(15)">
+                <constraints unique="true" nullable="true"/>
+            </column>
+        </createTable>
+        <createTable tableName="all_users">
+            <column name="id_user" type="BIGSERIAL" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false" unique="true"/>
+            </column>
+            <column name="first_name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="password" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="role" type="BIGINT">
+                <constraints
+                        foreignKeyName="to_id_roles"
+                        references="users_role(id_role)"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="account_type">
+            <column name="id_account_type" type="BIGSERIAL" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false" unique="true"/>
+            </column>
+            <column name="account_type_name" type="VARCHAR(255)"
+                    defaultValue="new_account_type">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="account">
+            <column name="id_account" type="BIGSERIAL" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false" unique="true"/>
+            </column>
+            <column name="current_balance" type="FLOAT" defaultValue="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="id_user" type="BIGSERIAL">
+                <constraints
+                        foreignKeyName="to_id_user"
+                        references="all_users(id_user)"
+                />
+            </column>
+            <column name="account_type" type="BIGINT">
+                <constraints foreignKeyName="to_id_account_type"
+                             references="account_type(id_account_type)"
+                />
+            </column>
+            <column name="account_name" type="VARCHAR(255)" defaultValue="new_account">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="transactions">
+            <column name="id_transaction" type="BIGSERIAL" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true" unique="true"/>
+            </column>
+            <column name="amount" type="FLOAT" defaultValue="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="to_account_id" type="BIGINT">
+                <constraints nullable="false"
+                             foreignKeyName="to_to_id_account"
+                             references="account(id_account)"
+                />
+            </column>
+            <column name="from_account_id" type="BIGINT">
+                <constraints foreignKeyName="to_id_account"
+                             references="account(id_account)"
+                />
+            </column>
+            <column name="transaction_date" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="transactions_category">
+            <column name="id_transactions_category" type="BIGSERIAL" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false" unique="true"/>
+            </column>
+            <column name="transactions_category_name" type="VARCHAR(255)"
+                    defaultValue="new_transactions_category">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="trans_and_trans_category">
+            <column name="id_transaction" type="BIGINT">
+                <constraints foreignKeyName="to_id_transaction"
+                             references="transactions(id_transaction)"
+                />
+            </column>
+            <column name="id_transaction_category" type="BIGINT">
+                <constraints foreignKeyName="to_id_transactions_category"
+                             references="transactions_category(id_transactions_category)"
+                />
+            </column>
+        </createTable>
+
+    </changeSet>
+
+</databaseChangeLog>
